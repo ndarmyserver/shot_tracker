@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Shot Tracker</title>
+  <!-- App name -->
+  <meta name="apple-mobile-web-app-title" content="Shot Tracker">
+  <!-- Make it open fullscreen, hide Safari UI -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- Status bar style (options: default, black, black-translucent)-->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Apple standard icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-touch-icon-76.png">
+  <!-- Standard favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
+  <!-- Chrome pinned tab/shortcut icon -->
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+  <!-- Safari pinned tab icon -->
+  <link rel="mask-icon" href="/icons/safari-icon.svg" color="#000000">
+  <!-- Launch screen color on iOS -->
+  <meta name="theme-color" content="#151515">
+
+  <!-- <link rel="stylesheet" href="styles.css" /> -->
+  <style>
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicLight.ttf") format("truetype");
+      font-weight: 300;
+    }
+
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicBook.ttf") format("truetype");
+      font-weight: 400;
+    }
+
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicMedium.ttf") format("truetype");
+      font-weight: 500;
+    }
+
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicDemi.ttf") format("truetype");
+      font-weight: 600;
+    }
+
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicBold.ttf") format("truetype");
+      font-weight: 700;
+    }
+
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicExtraBold.ttf") format("truetype");
+      font-weight: 800;
+    }
+
+    @font-face {
+      font-family: "futura-pt";
+      src: url("/fonts/FuturaCyrillicHeavy.ttf") format("truetype");
+      font-weight: 900;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'futura-pt', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      color: #151515;
+    }
+
+    .app-background {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: url("/images/bg-court-black.jpg") center / cover no-repeat;
+      /* iOS stability tweaks */
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100%;
+      width: 100%;
+      padding-top: max(24px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .spacer-top {
+      flex: 1;
+    }
+
+    .spacer-bottom {
+      flex: 1;
+      min-height: 24px;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 32px;
+      width: 100%;
+      max-width: 396px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      text-align: center;
+    }
+
+    h3 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 4px;
+      border-radius: 16px;
+      border: 2px solid #1D1D1E;
+      font-size: 18px;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      /* border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); */
+    }
+
+    #notesView {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #notesView textarea {
+      flex: 1;
+      width: 100%;
+      padding: 10px;
+      margin: 0;
+      border-radius: 11px;
+      border: 2px solid #1D1D1E;
+      font-size: 16px;
+      font-family: 'futura-pt', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      resize: none;
+      height: 100%;
+    }
+
+    button.submit-btn,
+    .set-nav button,
+    button.add-another-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #FF681D;
+      color: #151515;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.submit-btn {
+      visibility: hidden;
+    }
+
+    .set-nav button {
+      background: #EAEAEA;
+      color: #151515;
+      font-size: 16px;
+      margin: 16px 0;
+
+    }
+
+    #prevBtn {
+      visibility: hidden;
+    }
+
+    button.submit-btn:active,
+    .set-nav button:active,
+    button.add-another-btn:active {
+      transform: scale(0.98);
+    }
+
+    button.submit-btn:hover,
+    button.add-another-btn:hover {
+      background: #CC5315;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .card {
+      transition: opacity 0.2s ease;
+    }
+
+
+
+
+    /* Fade utility classes */
+    .fade {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      /* disable interaction while hidden */
+    }
+
+    .fade.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* iOS form control normalization */
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background-color: #FFFFFF;
+      text-align: center;
+      font-family: 'futura-pt', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+    }
+
+    /* iOS date input fixes */
+    @supports (-webkit-touch-callout: none) {
+      input[type="date"] {
+        padding-right: 10px;
+        text-align: center !important;
+        color: #151515 !important;
+        -webkit-text-fill-color: #151515;
+      }
+    }
+
+    .sets-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      border: 2px solid #1D1D1E;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .shooting-percent-total {
+      color: #1D1D1D;
+      font-size: .9rem;
+      margin-top: 0;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .variation {
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    .variation .title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .variation .shooting-percent {
+      color: #1D1D1D;
+      font-size: .9rem;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn {
+      width: 44px;
+      height: 44px;
+      border: 2px solid #151515;
+      border-radius: 50%;
+      background: url("/images/basketball-texture.jpg") center / cover no-repeat;
+      cursor: pointer;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 700;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button.btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .value {
+      text-align: center;
+      font-size: 48px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .set-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 40px;
+      width: 100%;
+    }
+
+    #thankYou p.confirmation {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+
+    /* --- STAT CARD SECTION --- */
+
+    /* Card */
+    .stat-card {
+      background: linear-gradient(#1a1a1a, #0f0f0f);
+      border-radius: 16px;
+      color: #ffffff;
+      margin-bottom: 16px;
+      padding: 12px;
+      width: 100%;
+    }
+
+    /* Title pinned to top-left */
+    .stat-card_title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ACACAC;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    /* Rows */
+    .stat-card_row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-card_averages {
+      justify-content: space-between;
+    }
+
+    /* Stat */
+    .stat-card_stat {
+      flex: 1;
+      text-align: center;
+      padding: 0 6px;
+    }
+
+    .stat-card_value {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .stat-card_value.session_value {
+      font-size: 24px;
+    }
+
+    .stat-card_sub-value {
+      margin-top: 4px;
+    }
+
+    .stat-card_label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    /* Dividers */
+    .stat-card_divider {
+      width: 1px;
+      align-self: stretch;
+      margin: 4px 0;
+      background: #646464;
+    }
+
+    /* Highlights */
+    .stat-card .highlight-yellow .stat-card_value {
+      color: #f5c400;
+    }
+
+    .stat-card .highlight-green .stat-card_value {
+      color: #2ecc71;
+    }
+
+    .stat-card .highlight-red .stat-card_value {
+      color: #F6413C;
+    }
+
+    .collapsible-container {
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .collapsible-header-container {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .collapsible-heading {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .collapsible-instructions {
+      color: #646464;
+      font-style: italic;
+    }
+
+    .collapsible-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .collapsible-content.expanded {
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- App wrapper contains card + logout button -->
+  <div class="app-background"></div>
+  <div class="app-wrapper">
+    <div class="spacer-top"></div>
+
+    <!-- Add transaction card -->
+    <div class="card">
+      <!-- <form id="transactionForm"> -->
+      <div id="shotForm">
+        <label>
+          SESSION DATE:
+          <input type="date" name="date" required />
+        </label>
+        <!-- <h2>TEST</h2> -->
+        <!-- SESSION STATS CARD -->
+        <div class="stat-card">
+          <div id="setHeading" class="stat-card_title">SET</div>
+          <div id="setStatCardRow" class="stat-card_row">
+            <div class="stat-card_stat">
+              <div id="setShotsAndAttempts" class="stat-card_value">XX/XX</div>
+              <div class="stat-card_label">SHOTS</div>
+            </div>
+
+            <div class="stat-card_divider"></div>
+
+            <div class="stat-card_stat">
+              <div id="setShootingPercent" class="stat-card_value">XX%</div>
+              <div class="stat-card_label">PCT</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETS CONTAINER -->
+        <div class="sets-view" id="setsView">
+          <!-- Variation: Right -->
+          <section class="variation" id="variationRight">
+            <div class="title">Receiving from the RIGHT</div>
+            <div class="grid" data-which="right">
+              <button class="btn minus" id="minusRight" aria-label="Decrease right count"><img src="/images/minus.svg" alt="Minus icon""></button>
+              <div class=" value" id="valueRight" aria-live="polite">0</div>
+              <button class="btn plus" id="plusRight" aria-label="Increase right count"><img src="/images/plus.svg" alt="Plus icon""></button>
+            </div>
+            <div class=" shooting-percent" id="shootingPercentRight">XX%</div>
+          </section>
+
+          <!-- Variation: Left -->
+          <section class="variation" id="variationLeft">
+            <div class="title">Receiving from the LEFT</div>
+            <div class="grid" data-which="left">
+              <button class="btn minus" id="minusLeft" aria-label="Decrease left count"><img src="/images/minus.svg" alt="Minus icon""></button>
+              <div class=" value" id="valueLeft" aria-live="polite">0</div>
+              <button class="btn plus" id="plusLeft" aria-label="Increase left count"><img src="/images/plus.svg" alt="Plus icon""></button>
+            </div>
+            <div class=" shooting-percent" id="shootingPercentLeft">Shooting Percentage: XX%</div>
+          </section>
+
+        </div>
+
+        <!-- Notes View (hidden by default) -->
+        <div id="notesView" class="hidden">
+          <textarea id="notesInput" placeholder="Add any notes about this session…"></textarea>
+        </div>
+
+        <!-- SET NAVIGATION BUTTONS -->
+        <div class="set-nav">
+          <button id="prevBtn">PREVIOUS</button>
+          <button id="nextBtn">NEXT</button>
+        </div>
+
+        <!-- SESSION STATS CARD -->
+        <div class="stat-card">
+          <div class="stat-card_title">SESSION</div>
+        
+          <div class="stat-card_row stat-card_averages">
+            <div class="stat-card_stat">
+              <div id="sessionShootingPercentRight" class="stat-card_value session_value">XX%</div>
+              <div id="sessionShotsAndAttemptsRight" class="stat-card_sub-value">XX/XX</div>
+              <div class="stat-card_label">RIGHT</div>
+            </div>
+        
+            <div class="stat-card_divider"></div>
+        
+            <div class="stat-card_stat">
+              <div id="sessionShootingPercentLeft" class="stat-card_value session_value">XX%</div>
+              <div id="sessionShotsAndAttemptsLeft" class="stat-card_sub-value">XX/XX</div>
+              <div class="stat-card_label">LEFT</div>
+            </div>
+        
+            <div class="stat-card_divider"></div>
+        
+            <div class="stat-card_stat">
+              <div id="sessionShootingPercentTotal" class="stat-card_value session_value">XX%</div>
+              <div id="sessionShotsAndAttemptsTotal" class="stat-card_sub-value">XX/XX</div>
+              <div class="stat-card_label">TOTAL</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="submit-btn" id="submitBtn">
+          <span class="btn-text">SUBMIT</span>
+          <span class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <div id="thankYou" class="hidden">
+        <h2>Nice work!</h2>
+        <p class="confirmation">Your session has been saved.</p>
+        <div id="summarySessionStats" class="summary-stats">Session stats will go here</div>
+        <!-- Collapsible Set Stats -->
+        <div class="collapsible-container">
+          <div class="collapsible-header-container">
+            <span class="arrow" style="visibility: hidden;">▼</span>
+            <div>
+              <div class="collapsible-heading">Set Stats</div>
+              <div id="collapsibleInstructions" class="collapsible-instructions">(Click to expand)</div>
+            </div>
+            <span id="collapsibleArrow" class="arrow">▼</span>
+          </div>
+          <div id="summarySetStats" class="collapsible-content">
+            <!-- Your dynamic set stats cards will go here -->
+          </div>
+        </div>
+        <button class="add-another-btn" id="addAnother">ADD ANOTHER</button>
+      </div>
+    </div>
+
+    <div class="spacer-bottom"></div>
+
+  </div>
+  <!-- <script type="module" src="script.js"></script> -->
+  <script>
+    // Variables & Constants
+    let currentMode = "Giving";
+    const birthdayNameWrapper = document.getElementById("birthdayNameWrapper");
+    const hiddenInputCategory = document.getElementById("categoryInput");
+    const hiddenInputBirthdayName = document.getElementById("birthdayNameInput");
+    const vendorLabel = document.getElementById("vendorLabel");
+
+    // ----- Transaction form logic -----
+    // State: 5 sets, each with right/left; currentSet 0..4
+    const state = {
+      date: "",
+      sets: Array.from({ length: 5 }, () => ({ right: 0, left: 0 })),
+      currentSet: 0,
+      note: ""
+    };
+
+    const form = document.getElementById("shotForm");
+    const thankYou = document.getElementById("thankYou");
+    const addAnother = document.getElementById("addAnother");
+    const submitBtn = document.getElementById("submitBtn");
+    const btnText = submitBtn.querySelector(".btn-text");
+    const spinner = submitBtn.querySelector(".spinner");
+    const valueRight = document.getElementById('valueRight');
+    const valueLeft = document.getElementById('valueLeft');
+    const minusRight = document.getElementById('minusRight');
+    const plusRight = document.getElementById('plusRight');
+    const shootingPercentRight = document.getElementById('shootingPercentRight');
+    const minusLeft = document.getElementById('minusLeft');
+    const plusLeft = document.getElementById('plusLeft');
+    const shootingPercentLeft = document.getElementById('shootingPercentLeft');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const setHeading = document.getElementById('setHeading');
+    const setStatCardRow = document.getElementById('setStatCardRow');
+    const setShotsAndAttempts = document.getElementById('setShotsAndAttempts');
+    const setShootingPercent = document.getElementById('setShootingPercent');
+    const sessionShootingPercentRight = document.getElementById('sessionShootingPercentRight');
+    const sessionShootingPercentLeft = document.getElementById('sessionShootingPercentLeft');
+    const sessionShootingPercentTotal = document.getElementById('sessionShootingPercentTotal');
+    const sessionShotsAndAttemptsRight = document.getElementById('sessionShotsAndAttemptsRight');
+    const sesssionShotsAndAttemptsLeft = document.getElementById('sesssionShotsAndAttemptsLeft');
+    const sessionShotsAndAttemptsTotal = document.getElementById('sessionShotsAndAttemptsTotal');
+    const setsView = document.getElementById('setsView');
+    const notesView = document.getElementById('notesView');
+    const notesInput = document.getElementById('notesInput');
+    const dateInput = document.querySelector('input[name="date"]');
+    const summarySessionStats = document.getElementById('summarySessionStats');
+    const summarySetStats = document.getElementById('summarySetStats');
+    const collapsibleHeaderContainer = document.querySelector('.collapsible-header-container');
+    const collapsibleContent = document.querySelector('.collapsible-content');
+    const collapsibleArrow = document.getElementById('collapsibleArrow');
+    const collapsibleInstructions = document.getElementById('collapsibleInstructions');
+
+    // Set date picker to default to today
+    function setToday() {
+      const today = new Date().toISOString().split("T")[0];
+      dateInput.value = today;
+    }
+
+    // Render the values and button visibility for current set
+    function renderSet(setIdx) {
+      // Update values
+      const s = state.sets[setIdx];
+      valueRight.textContent = s.right;
+      valueLeft.textContent = s.left;
+
+      // Update minus/plus, shooting perctange visibility based on value
+      minusRight.style.visibility = s.right > 0 ? 'visible' : 'hidden';
+      plusRight.style.visibility = s.right < 99 ? 'visible' : 'hidden';
+      shootingPercentRight.textContent = `${parseFloat((3 / s.right * 100).toFixed(1))}%`;
+      shootingPercentRight.style.visibility = s.right > 0 ? 'visible' : 'hidden';
+
+      minusLeft.style.visibility = s.left > 0 ? 'visible' : 'hidden';
+      plusLeft.style.visibility = s.left < 99 ? 'visible' : 'hidden';
+      shootingPercentLeft.textContent = `${parseFloat((3 / s.left * 100).toFixed(1))}%`;
+      shootingPercentLeft.style.visibility = s.left > 0 ? 'visible' : 'hidden';
+
+      // Calculate and display Set Shooting Perctnage
+      if (s.right > 0 || s.left > 0) {
+        const setRightMade = s.right > 0 ? 3 : 0;
+        const setLeftMade = s.left > 0 ? 3 : 0;
+        setShotsAndAttempts.textContent = `${setRightMade + setLeftMade}/${s.right + s.left}`;
+        setShootingPercent.textContent = `${parseFloat(((setRightMade + setLeftMade) / (s.right + s.left) * 100).toFixed(1))}%`;
+      } else {
+        setShotsAndAttempts.textContent = "—";
+        setShootingPercent.textContent = "—";
+      }
+
+      // Calculate and display Session Shooting Percentage and Attempts
+      let sessionTotalAttemptsRight = 0;
+      let sessionTotalAttemptsLeft = 0;
+      let sessionTotalMakesRight = 0;
+      let sessionTotalMakesLeft = 0;
+
+      state.sets.forEach(shot => {
+        // Add attempts
+        sessionTotalAttemptsRight += shot.right;
+        sessionTotalAttemptsLeft += shot.left;
+
+        // Add makes (3 points if value > 0)
+        if (shot.right > 0) sessionTotalMakesRight += 3;
+        if (shot.left > 0) sessionTotalMakesLeft += 3;
+      });
+
+      sessionShootingPercentRight.textContent = sessionTotalAttemptsRight > 0 ? `${parseFloat((sessionTotalMakesRight / sessionTotalAttemptsRight * 100).toFixed(1))}%` : "—";
+      sessionShotsAndAttemptsRight.textContent = sessionTotalAttemptsRight > 0 ? `${sessionTotalMakesRight}/${sessionTotalAttemptsRight}` : "—";
+
+
+      sessionShootingPercentLeft.textContent = sessionTotalAttemptsLeft > 0 ? `${parseFloat((sessionTotalMakesLeft / sessionTotalAttemptsLeft * 100).toFixed(1))}%` : "—";
+      sessionShotsAndAttemptsLeft.textContent = sessionTotalAttemptsLeft > 0 ? `${sessionTotalMakesLeft}/${sessionTotalAttemptsLeft}` : "—";
+
+      sessionShootingPercentTotal.textContent = (sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${parseFloat(((sessionTotalMakesRight + sessionTotalMakesLeft) / (sessionTotalAttemptsRight + sessionTotalAttemptsLeft) * 100).toFixed(1))}%` : "—";
+      sessionShotsAndAttemptsTotal.textContent = (sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) > 0 ? `${sessionTotalMakesRight + sessionTotalMakesLeft}/${sessionTotalAttemptsRight + sessionTotalAttemptsLeft}` : "—";
+
+    }
+
+    // Helpers to update a single value
+    function updateValue(which, delta) {
+      const idx = state.currentSet;
+      const key = which; // 'right' or 'left'
+      const old = state.sets[idx][key];
+      let next = old + delta;
+      if (next < 0) next = 0;
+      if (next > 99) next = 99;
+      state.sets[idx][key] = next;
+      renderSet(idx);
+    }
+
+    // Prev/Next navigation
+    function updateSetIndexUI() {
+      if (state.currentSet === 5) {
+        // Notes view
+        setHeading.textContent = 'Notes';
+        syncNotesHeight();
+        setStatCardRow.style.visibility = 'hidden';
+        setsView.classList.add('hidden');
+        notesView.classList.remove('hidden');
+        prevBtn.style.visibility = 'visible';
+        nextBtn.style.visibility = 'hidden';
+        submitBtn.style.visibility = 'visible';
+      } else {
+        // Set view (0-4)
+        setHeading.textContent = `SET ${state.currentSet + 1} of 5`;
+        setsView.classList.remove('hidden');
+        notesView.classList.add('hidden');
+        setStatCardRow.style.visibility = 'visible';
+
+        // Show/hide prev button
+        if (state.currentSet === 0) {
+          prevBtn.style.visibility = 'hidden';
+        } else {
+          prevBtn.style.visibility = 'visible';
+        }
+
+        // Always show next button on sets
+        nextBtn.style.visibility = 'visible';
+
+        // Show submit on set 5, hide on others
+        if (state.currentSet === 4) {
+          submitBtn.style.visibility = 'visible';
+        } else {
+          submitBtn.style.visibility = 'hidden';
+        }
+      }
+    }
+
+    function syncNotesHeight() {
+      const setsHeight = setsView.getBoundingClientRect().height;
+      notesView.style.minHeight = `${setsHeight}px`;
+    }
+
+    // Initialize
+    setToday();
+    renderSet(state.currentSet);
+    updateSetIndexUI();
+    syncNotesHeight();
+
+    // Attach event handlers
+    plusRight.addEventListener('click', () => updateValue('right', state.sets[state.currentSet].right === 0 ? +3 : +1));
+    minusRight.addEventListener('click', () => updateValue('right', state.sets[state.currentSet].right === 3 ? -3 : -1));
+    plusLeft.addEventListener('click', () => updateValue('left', state.sets[state.currentSet].left === 0 ? +3 : +1));
+    minusLeft.addEventListener('click', () => updateValue('left', state.sets[state.currentSet].left === 3 ? -3 : -1));
+
+    prevBtn.addEventListener('click', () => {
+      if (state.currentSet > 0) {
+        // Save notes if leaving notes view
+        if (state.currentSet === 5) {
+          state.note = notesInput.value;
+        }
+
+        state.currentSet--;
+
+        // Render set if going back to sets view
+        if (state.currentSet < 5) {
+          renderSet(state.currentSet);
+        }
+
+        updateSetIndexUI();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (state.currentSet < 5) {
+        state.currentSet++;
+
+        // If moving to notes view, populate textarea
+        if (state.currentSet === 5) {
+          notesInput.value = state.note;
+        } else {
+          renderSet(state.currentSet);
+        }
+
+        updateSetIndexUI();
+      }
+    });
+
+
+    submitBtn.addEventListener("click", async () => {
+
+      setLoading(true);
+
+      const SECRET_TOKEN = "oo04d@E5tXR3ie*8G&9$3SzHd79M0H";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbyvKYyNhZb3e7KftrOciXIKQFzogaFCyQQdKC1mUwoPUDqJ4t6mfBYZIoDhc7I4140e6g/exec"
+
+      try {
+        state.date = dateInput.value;
+
+        // Save notes before submitting
+        if (state.currentSet === 5) {
+          state.note = notesInput.value;
+        }
+
+        const payload = {
+          token: SECRET_TOKEN,
+          date: state.date,
+          sets: [
+            { "right": state.sets[0].right, "left": state.sets[0].left },
+            { "right": state.sets[1].right, "left": state.sets[1].left },
+            { "right": state.sets[2].right, "left": state.sets[2].left },
+            { "right": state.sets[3].right, "left": state.sets[3].left },
+            { "right": state.sets[4].right, "left": state.sets[4].left },
+          ],
+          note: state.note
+        };
+
+        await fetch(scriptURL, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify(payload)
+        });
+
+        form.classList.add("hidden");
+        calculateSummaryStats();
+        thankYou.classList.remove("hidden");
+
+        // Reset state after successful submit
+        state.sets = Array.from({ length: 5 }, () => ({ right: 0, left: 0 }));
+        state.currentSet = 0;
+        state.note = "";
+        notesInput.value = "";
+        renderSet(0);
+        updateSetIndexUI();
+        setToday();
+      } catch (err) {
+        alert("Something went wrong. Try submitting again or check the console.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      btnText.classList.toggle("hidden", isLoading);
+      spinner.classList.toggle("hidden", !isLoading);
+    }
+
+    function calculateSummaryStats() {
+      // Calculate and display Session Shooting Percentage
+      let sessionTotalAttemptsRight = 0;
+      let sessionTotalAttemptsLeft = 0;
+      let sessionTotalMakesRight = 0;
+      let sessionTotalMakesLeft = 0;
+
+      summarySessionStats.innerHTML = "";
+      summarySetStats.innerHTML = "";
+
+      // Example dummy sets
+      // const dummySets = [
+      //   { right: 3, left: 4 },
+      //   { right: 5, left: 6 },
+      //   { right: 7, left: 8 },
+      //   { right: 9, left: 10 },
+      //   { right: 11, left: 12 }
+      // ];
+
+      state.sets.forEach((shot, index) => {
+      // state.sets.forEach((shot, index) => {
+        // Add attempts
+        sessionTotalAttemptsRight += shot.right;
+        sessionTotalAttemptsLeft += shot.left;
+
+        // Add makes (3 points if value > 0)
+        if (shot.right > 0) sessionTotalMakesRight += 3;
+        if (shot.left > 0) sessionTotalMakesLeft += 3;
+
+        const setStatCardHTML = `
+          <!-- SUMMARY SET STATS CARD -->
+          <div class="stat-card">
+            <div class="stat-card_title">SET ${index + 1} of 5</div>
+
+            <div class="stat-card_row stat-card_averages">
+              <div class="stat-card_stat">
+                <div class="stat-card_value session_value">${shot.right > 0 ? `${parseFloat((3 / shot.right * 100).toFixed(1))}%` : "—" }</div>
+                <div class="stat-card_sub-value">${shot.right > 0 ? `3/${shot.right}` : "—"}</div>
+                <div class="stat-card_label">RIGHT</div>
+              </div>
+
+              <div class="stat-card_divider"></div>
+
+              <div class="stat-card_stat">
+                <div class="stat-card_value session_value">${shot.left > 0 ? `${parseFloat((3 / shot.left * 100).toFixed(1))}%` : "—" }</div>
+                <div class="stat-card_sub-value">${shot.left > 0 ? `3/${shot.left}` : "—"}</div>
+                <div class="stat-card_label">LEFT</div>
+              </div>
+
+              <div class="stat-card_divider"></div>
+
+              <div class="stat-card_stat">
+                <div id="sessionShootingPercentTotal" class="stat-card_value session_value">${(shot.right > 0 || shot.left > 0) ? `${parseFloat((((shot.right > 0 ? 3 : 0) + (shot.left > 0 ? 3 : 0)) / (shot.right + shot.left) * 100).toFixed(1))}%` : "—" }</div>
+                <div id="sessionShotsAndAttemptsTotal" class="stat-card_sub-value">${(shot.right > 0 || shot.left > 0) ? `${(shot.right > 0 ? 3 : 0) + (shot.left > 0 ? 3 : 0)}/${shot.right + shot.left}` : "—" }</div>
+                <div class="stat-card_label">TOTAL</div>
+              </div>
+            </div>
+          </div>
+        `;
+        summarySetStats.innerHTML += setStatCardHTML;
+      });
+
+      const sessionStatCardHTML = `
+        <!-- SUMMARY SET STATS CARD -->
+        <div class="stat-card">
+          <div class="stat-card_title">SESSION</div>
+
+          <div class="stat-card_row stat-card_averages">
+            <div class="stat-card_stat">
+              <div class="stat-card_value session_value">${sessionTotalAttemptsRight > 0 ? `${parseFloat((sessionTotalMakesRight / sessionTotalAttemptsRight * 100).toFixed(1))}%` : "—"}</div>
+              <div class="stat-card_sub-value">${sessionTotalAttemptsRight > 0 ? `${sessionTotalMakesRight}/${sessionTotalAttemptsRight}` : "—"}</div>
+              <div class="stat-card_label">RIGHT</div>
+            </div>
+
+            <div class="stat-card_divider"></div>
+
+            <div class="stat-card_stat">
+              <div class="stat-card_value session_value">${sessionTotalAttemptsLeft > 0 ? `${parseFloat((sessionTotalMakesLeft / sessionTotalAttemptsLeft * 100).toFixed(2))}%` : "—"}</div>
+              <div class="stat-card_sub-value">${sessionTotalAttemptsLeft > 0 ? `${sessionTotalMakesLeft}/${sessionTotalAttemptsLeft}` : "—"}</div>
+              <div class="stat-card_label">LEFT</div>
+            </div>
+
+            <div class="stat-card_divider"></div>
+
+            <div class="stat-card_stat">
+              <div id="sessionShootingPercentTotal" class="stat-card_value session_value">${(sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${parseFloat(((sessionTotalMakesRight + sessionTotalMakesLeft) / (sessionTotalAttemptsRight + sessionTotalAttemptsLeft) * 100).toFixed(1))}%` : "—"}</div>
+              <div id="sessionShotsAndAttemptsTotal" class="stat-card_sub-value">${(sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${sessionTotalMakesRight + sessionTotalMakesLeft}/${sessionTotalAttemptsRight + sessionTotalAttemptsLeft}` : "—"}</div>
+              <div class="stat-card_label">TOTAL</div>
+            </div>
+          </div>
+        </div>
+      `;
+      summarySessionStats.innerHTML += sessionStatCardHTML;
+    }
+
+    collapsibleHeaderContainer.addEventListener('click', () => {
+      collapsibleContent.classList.toggle('expanded');
+
+      if (collapsibleContent.classList.contains('expanded')) {
+        collapsibleContent.style.maxHeight = collapsibleContent.scrollHeight + "px";
+        collapsibleArrow.textContent = "▲"; // Change arrow to up
+        collapsibleInstructions.textContent = "(Click to collapse)"
+      } else {
+        collapsibleContent.style.maxHeight = "0";
+        collapsibleArrow.textContent = "▼"; // Change arrow back down
+        collapsibleInstructions.textContent = "(Click to expand)"
+      }
+    });
+
+    addAnother.addEventListener("click", () => {
+      thankYou.classList.add("hidden");
+      form.classList.remove("hidden");
+      state.sets = Array.from({ length: 5 }, () => ({ right: 0, left: 0 }));
+      state.currentSet = 0;
+      state.note = "";
+      notesInput.value = "";
+      renderSet(0);
+      updateSetIndexUI();
+      setToday();
+    });
+
+    function previewThankYouCard() {
+        // Hide the form
+        form.classList.add("hidden");
+        // Show thankYou
+        thankYou.classList.remove("hidden");
+        calculateSummaryStats()
+
+    }
+    // previewThankYouCard();
+
+    // code to eliminate double taps from zooming on iOS
+    let lastTouchEnd = 0;
+
+    document.addEventListener(
+      'touchend',
+      function (event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 200) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      },
+      { passive: false }
+    );
+  </script>
+</body>
+
+</html>

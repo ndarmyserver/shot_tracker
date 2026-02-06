@@ -1,0 +1,8 @@
+orange          #FF681D
+dark orange     #CC5315
+white           #FAFAFA
+light gray      #EAEAEA
+app light gray  #646464
+app darker gray #ACACAC
+nearly black    #1D1D1E
+black           #151515
