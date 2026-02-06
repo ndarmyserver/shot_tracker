@@ -1018,7 +1018,7 @@
         calculateSummaryStats()
 
     }
-    previewThankYouCard();
+    // previewThankYouCard();
 
     // code to eliminate double taps from zooming on iOS
     let lastTouchEnd = 0;
@@ -1036,18 +1036,21 @@
     );
 
     // --- GET STATS FROM GOOGLE SHEET ---
-    async function fetchsheetStats() {
-      const res = await fetch(`${scriptURL}?token=${encodeURIComponent(SECRET_TOKEN)}`, {
-        method: "GET",
-        mode: "no-cors"
-      });
-      if (!res.ok) throw new Error("Failed to fetch vendors");
-      const sheetStats = await res.json();
-      console.log(sheetStats);
-      return sheetStats;
+    async function getStatsFromGoogleSheet() {
+      try {
+        const response = await fetch(`${scriptURL}?token=${encodeURIComponent(SECRET_TOKEN)}`);
+        const data = await response.json();
+
+        if (data.success && data.stats) {
+          console.log("Stats from sheet:", data.stats);
+
+        }
+      } catch (err) {
+        console.error("Failed to load stats from Google Sheets:", err);
+      }
     }
 
-    fetchsheetStats();
+    getStatsFromGoogleSheet();
   </script>
 </body>
 
