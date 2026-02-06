@@ -145,7 +145,7 @@
       padding: 10px;
       margin-top: 4px;
       border-radius: 16px;
-      border: 2px solid #1D1D1E;
+      border: 2px solid #1d1d1e;
       font-size: 18px;
     }
 
@@ -167,7 +167,7 @@
       padding: 10px;
       margin: 0;
       border-radius: 11px;
-      border: 2px solid #1D1D1E;
+      border: 2px solid #1d1d1e;
       font-size: 16px;
       font-family: 'futura-pt', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       resize: none;
@@ -181,7 +181,7 @@
       padding: 12px;
       border-radius: 8px;
       border: none;
-      background: #FF681D;
+      background: #ff681d;
       color: #151515;
       font-size: 18px;
       font-weight: 700;
@@ -193,7 +193,7 @@
     }
 
     .set-nav button {
-      background: #EAEAEA;
+      background: #eaeaea;
       color: #151515;
       font-size: 16px;
       margin: 16px 0;
@@ -212,7 +212,7 @@
 
     button.submit-btn:hover,
     button.add-another-btn:hover {
-      background: #CC5315;
+      background: #cc5315;
     }
 
     .spinner {
@@ -280,13 +280,13 @@
       flex-direction: column;
       align-items: center;
       gap: 40px;
-      border: 2px solid #1D1D1E;
+      border: 2px solid #1d1d1e;
       border-radius: 16px;
       padding: 12px;
     }
 
     .shooting-percent-total {
-      color: #1D1D1D;
+      color: #1d1d1d;
       font-size: .9rem;
       margin-top: 0;
       margin-bottom: 16px;
@@ -306,7 +306,7 @@
     }
 
     .variation .shooting-percent {
-      color: #1D1D1D;
+      color: #1d1d1d;
       font-size: .9rem;
       margin-top: 10px;
       text-align: center;
@@ -379,7 +379,7 @@
     .stat-card_title {
       font-size: 24px;
       font-weight: 700;
-      color: #ACACAC;
+      color: #acacac;
       margin-bottom: 10px;
       text-align: center;
     }
@@ -441,7 +441,7 @@
     }
 
     .stat-card .highlight-red .stat-card_value {
-      color: #F6413C;
+      color: #f6413c;
     }
 
     .collapsible-container {
@@ -464,7 +464,7 @@
     }
 
     .collapsible-instructions {
-      color: #646464;
+      color: #acacac;
       font-style: italic;
     }
 
@@ -665,6 +665,9 @@
     const collapsibleArrow = document.getElementById('collapsibleArrow');
     const collapsibleInstructions = document.getElementById('collapsibleInstructions');
 
+    const SECRET_TOKEN = "oo04d@E5tXR3ie*8G&9$3SzHd79M0H";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyvKYyNhZb3e7KftrOciXIKQFzogaFCyQQdKC1mUwoPUDqJ4t6mfBYZIoDhc7I4140e6g/exec"
+
     // Set date picker to default to today
     function setToday() {
       const today = new Date().toISOString().split("T")[0];
@@ -833,9 +836,6 @@
 
       setLoading(true);
 
-      const SECRET_TOKEN = "oo04d@E5tXR3ie*8G&9$3SzHd79M0H";
-      const scriptURL = "https://script.google.com/macros/s/AKfycbyvKYyNhZb3e7KftrOciXIKQFzogaFCyQQdKC1mUwoPUDqJ4t6mfBYZIoDhc7I4140e6g/exec"
-
       try {
         state.date = dateInput.value;
 
@@ -900,16 +900,16 @@
       summarySetStats.innerHTML = "";
 
       // Example dummy sets
-      // const dummySets = [
-      //   { right: 3, left: 4 },
-      //   { right: 5, left: 6 },
-      //   { right: 7, left: 8 },
-      //   { right: 9, left: 10 },
-      //   { right: 11, left: 12 }
-      // ];
+      const dummySets = [
+        { right: 3, left: 4 },
+        { right: 5, left: 6 },
+        { right: 7, left: 8 },
+        { right: 9, left: 10 },
+        { right: 11, left: 12 }
+      ];
 
-      state.sets.forEach((shot, index) => {
       // state.sets.forEach((shot, index) => {
+      state.sets.forEach((shot, index) => {
         // Add attempts
         sessionTotalAttemptsRight += shot.right;
         sessionTotalAttemptsLeft += shot.left;
@@ -1018,7 +1018,7 @@
         calculateSummaryStats()
 
     }
-    // previewThankYouCard();
+    previewThankYouCard();
 
     // code to eliminate double taps from zooming on iOS
     let lastTouchEnd = 0;
@@ -1034,6 +1034,20 @@
       },
       { passive: false }
     );
+
+    // --- GET STATS FROM GOOGLE SHEET ---
+    async function fetchsheetStats() {
+      const res = await fetch(`${scriptURL}?token=${encodeURIComponent(SECRET_TOKEN)}`, {
+        method: "GET",
+        mode: "no-cors"
+      });
+      if (!res.ok) throw new Error("Failed to fetch vendors");
+      const sheetStats = await res.json();
+      console.log(sheetStats);
+      return sheetStats;
+    }
+
+    fetchsheetStats();
   </script>
 </body>
 
