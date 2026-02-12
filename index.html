@@ -121,6 +121,7 @@
       width: 100%;
       max-width: 396px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
 
     h2 {
@@ -135,7 +136,7 @@
     label {
       display: block;
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       font-size: 1rem;
       font-weight: 600;
     }
@@ -231,6 +232,33 @@
       }
     }
 
+    #stats {
+      position: relative;
+    }
+
+    #loadingOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    #loadingOverlay .overlay-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+      background: #000000;
+      padding: 12px 24px;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -279,7 +307,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 40px;
+      gap: 16px;
       border: 2px solid #1d1d1e;
       border-radius: 16px;
       padding: 12px;
@@ -289,7 +317,7 @@
       color: #1d1d1d;
       font-size: .9rem;
       margin-top: 0;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       text-align: center;
     }
 
@@ -298,10 +326,22 @@
       width: 100%;
     }
 
-    .variation .title {
+    .variation .title, .range-title, .range-current-date, .range-prior-date {
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       font-size: 1rem;
+      text-align: center;
+    }
+
+    .range-current-date, .range-prior-date {
+      color: #acacac;
+      margin-bottom: 0;
+    }
+
+    .range-current-label, .range-prior-label {
+      color: #acacac;
+      font-size: 12px;
+      letter-spacing: 0.08em;
       text-align: center;
     }
 
@@ -359,29 +399,41 @@
     #thankYou p.confirmation {
       text-align: center;
       margin-top: 0;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
 
     /* --- STAT CARD SECTION --- */
 
     /* Card */
-    .stat-card {
+    .stat-card, .graph-card {
       background: linear-gradient(#1a1a1a, #0f0f0f);
       border-radius: 16px;
       color: #ffffff;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       padding: 12px;
       width: 100%;
     }
 
-    /* Title pinned to top-left */
-    .stat-card_title {
+    .graph-card {
+      margin-bottom: 0;
+      padding: 0;
+    }
+
+    .graph-card.show {
+      padding: 12px;
+    }
+
+    .stat-card_title, .graph-title {
       font-size: 24px;
       font-weight: 700;
       color: #acacac;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       text-align: center;
+    }
+
+    .graph-title {
+      font-size: 16px;
     }
 
     /* Rows */
@@ -412,6 +464,10 @@
       font-size: 24px;
     }
 
+    .stat-card_value.compare_value {
+      font-size: 20px;
+    }
+
     .stat-card_sub-value {
       margin-top: 4px;
     }
@@ -423,6 +479,12 @@
       margin-top: 4px;
     }
 
+    .stat-card_session-description {
+      font-style: italic;
+      margin-top: 4px;
+      text-align:center;
+    }
+
     /* Dividers */
     .stat-card_divider {
       width: 1px;
@@ -431,21 +493,75 @@
       background: #646464;
     }
 
+    .stat-card_divider-hidden {
+      width: 1px;
+      align-self: stretch;
+      margin: 4px 0;
+      background: transparent;
+    }
+
+    .stat-card_divider-horizontal, .stat-card_divider-horizontal_under_label, .range_divider-horizontal, .range_divider-horizontal_under_label {
+      width: 100%;
+      height: 1px;
+      margin: 4px 0 16px;
+      background: #646464;
+    }
+
+    .stat-card_divider-horizontal_under_label, .range_divider-horizontal_under_label {
+      margin-bottom: 4px;
+    }
+
+    .range_divider-horizontal, .range_divider-horizontal_under_label {
+      background: #acacac;
+    }
+
+    .stat-card_current-label, .stat-card_prior-label, .stat-card_compare-label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: #646464;
+      text-align: center;
+    }
+
     /* Highlights */
-    .stat-card .highlight-yellow .stat-card_value {
-      color: #f5c400;
-    }
-
-    .stat-card .highlight-green .stat-card_value {
-      color: #2ecc71;
-    }
-
-    .stat-card .highlight-red .stat-card_value {
+    .highlight-red {
       color: #f6413c;
     }
 
+    .highlight-yellow {
+      color: #f5c400;
+    }
+
+    .highlight-green {
+      color: #2ecc71;
+    }
+
+    .highlight-blue {
+      color: #51BBFE;
+    }
+
+    .highlight-gray {
+      color: #acacac;
+    }
+
+    /* To help make the showing of the Person dropdown smoother */
+    .collapsible {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.5s ease, opacity 0.5s ease, margin-bottom 0.5s ease;
+      margin: 0;
+    }
+
+    .collapsible.show {
+      max-height: 248px;
+      /* enough to show graph */
+      opacity: 1;
+      margin-top: 4px;
+    }
+
+    /* To make Show Set Detail stats on the Session Summary screen an accordion */
     .collapsible-container {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       overflow: hidden;
     }
 
@@ -454,7 +570,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       text-align: center;
     }
 
@@ -476,6 +592,99 @@
 
     .collapsible-content.expanded {
     }
+
+    /* --- SLIDER SECTION --- */
+    /* Toggle wrappers */
+    .mode-toggle-wrapper, .category-toggle-wrapper, .statDateRange-toggle-wrapper {
+      display: block;          /* block-level helps iOS detect swipes */
+      touch-action: pan-y;     /* vertical scrolling still works */
+      -webkit-user-select: none;
+      margin-bottom: 12px;
+    }
+
+    /* Toggle container */
+    .mode-toggle, .category-toggle, .statDateRange-toggle {
+      position: relative;
+      margin: 0 auto;
+      display: flex;
+      background: #eaeaea;
+      border-radius: 16px;
+      user-select: none;
+    }
+
+    .mode-toggle {
+      width: 50%;
+    }
+
+    .statDateRange-toggle {
+      width: 100%;
+    }
+
+    /* Sliding pill */
+    .toggle-pill {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: auto;
+      height: calc(100% - 8px);
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      transition: transform 0.25s ease;
+      z-index: 1;
+      /* to force hardware acceleration */
+      transform: translateX(0) translateZ(0);
+      will-change: transform;
+    }
+
+
+    .mode-toggle button, .statDateRange-toggle button {
+      all: unset; /* remove all global button styles */
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+      font-weight: 600;
+      color: #151515;
+      user-select: none;
+      z-index: 2;
+      text-align: center;
+      pointer-events: auto; /* ensure clicks work */
+      border-radius: 16px; /* optional for pill look */
+      -webkit-tap-highlight-color: transparent; /* remove blue tap highlight */
+      touch-action: manipulation; /* improves tap responsiveness */
+    }
+
+    .mode-toggle button {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mode-toggle img {
+      width: 14px;
+    }
+
+    .mode-toggle span {
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .statDateRange-toggle span {
+      font-size: 12px;
+    }
+      
+    /* Active state */
+    .toggle-option.active {
+      color: #151515;
+    }
+
+    .toggle-option:focus-visible {
+      outline: 2px solid #4c6ef5;
+      outline-offset: 2px;
+    }
+
   </style>
 
 </head>
@@ -488,14 +697,267 @@
 
     <!-- Add transaction card -->
     <div class="card">
-      <!-- <form id="transactionForm"> -->
+      <!-- Loading overlay -->
+      <div id="loadingOverlay" class="hidden">
+        <div class="overlay-content">
+          <div class="spinner"></div>
+          <div>Loading stats…</div>
+        </div>
+      </div>
+      <!-- To slider: Mode -->
+      <div id="modeToggleWrapper" class="mode-toggle-wrapper">
+        <div class="mode-toggle" role="group" aria-label="Mode selector">
+          <div class="toggle-pill"></div>
+      
+          <button type="button" class="toggle-option active" data-value="Input" data-index="0">
+            <img src="images/input-icon.svg" alt="Input icon">
+            <span>INPUT</span>
+          </button>
+      
+          <button type="button" class="toggle-option" data-value="Stats" data-index="1">
+            <img src="images/stat-icon.svg" alt="Stats icon">
+            <span>STATS</span>
+          </button>
+        </div>
+      </div>
+      <div id="stats" class="hidden">
+
+        <div class="range-title">TIME PERIOD</div>
+        <!-- STAT TIME FRAME SLIDER -->
+        <div id="statDateRangeWrapper" class="statDateRange-toggle-wrapper">
+          <div class="statDateRange-toggle" role="group" aria-label="State date range selector">
+            <div class="toggle-pill"></div>
+            <button type="button" class="toggle-option active" data-value="1" data-index="0">1</button>
+            <button type="button" class="toggle-option" data-value="7" data-index="1">7</button>
+            <button type="button" class="toggle-option" data-value="30" data-index="2">30</button>
+            <button type="button" class="toggle-option" data-value="90" data-index="3">90</button>
+            <button type="button" class="toggle-option" data-value="180" data-index="4">180</button>
+            <button type="button" class="toggle-option" data-value="365" data-index="5">365</button>
+            <button type="button" class="toggle-option" data-value="All" data-index="6">ALL</button>
+          </div>
+        </div>
+
+        <!-- CURRENT TIME PERIOD STATS CARD -->
+        <div id="rangeTitle" class="range-title">LAST XXXX</div>
+        <div id="rangeCurrentLabel" class="range-current-label collapsible">CURRENT</div>
+        <div class="range_divider-horizontal_under_label"></div>
+        <div id="rangeCurrentDate" class="range-current-date">XX/XX/XX</div>
+        <div class="range_divider-horizontal"></div>
+        <div id="rangePriorWrapper" class="collapsible">
+          <div class="range-prior-label">PRIOR</div>
+          <div class="range_divider-horizontal_under_label"></div>
+          <div id="rangePriorDate" class="range-prior-date">XX/XX/XX</div>
+          <div class="range_divider-horizontal"></div>
+        </div>
+
+        <!-- SETS CARD -->
+        <div class="stat-card">
+          <div class="stat-card_title">SETS</div>
+          <div id="setsCurrentLabel" class="stat-card_current-label collapsible">CURRENT</div>
+          <div class="stat-card_divider-horizontal_under_label"></div>
+
+          <div class="stat-card_row stat-card_averages">
+            <div class="stat-card_stat">
+              <div id="setsCurrentValueR" class="stat-card_value session_value">XX</div>
+            </div>
+        
+            <div class="stat-card_divider"></div>
+        
+            <div class="stat-card_stat">
+              <div id="setsCurrentValueL" class="stat-card_value session_value">XX</div>
+            </div>
+        
+            <div class="stat-card_divider"></div>
+        
+            <div class="stat-card_stat">
+              <div id="setsCurrentValueT" class="stat-card_value session_value">XX</div>
+            </div>
+          </div>
+          <div id="sessionsCurrentDesc" class="stat-card_session-description collapsible">Over XX sessions</div>
+          <div class="stat-card_divider-horizontal"></div>
+
+          <div id="setsPriorAndCompareWrapper" class="collapsible">
+            <div class="stat-card_prior-label">PRIOR</div>
+            <div class="stat-card_divider-horizontal_under_label"></div>
+
+            <div class="stat-card_row stat-card_averages">
+              <div class="stat-card_stat">
+                <div id="setsPriorValueR" class="stat-card_value session_value">XX</div>
+              </div>
+            
+              <div class="stat-card_divider"></div>
+            
+              <div class="stat-card_stat">
+                <div id="setsPriorValueL" class="stat-card_value session_value">XX</div>
+              </div>
+            
+              <div class="stat-card_divider"></div>
+            
+              <div class="stat-card_stat">
+                <div id="setsPriorValueT" class="stat-card_value session_value">XX</div>
+              </div>
+            </div>
+            <div id="sessionsPriorDesc" class="stat-card_session-description collapsible">Over XX sessions</div>
+            <div class="stat-card_divider-horizontal"></div>
+
+            <div class="stat-card_compare-label">COMPARE</div>
+            <div class="stat-card_divider-horizontal_under_label"></div>
+
+            <div class="stat-card_row stat-card_averages">
+              <div class="stat-card_stat">
+                <div id="setsCompareValueR" class="stat-card_value compare_value">XX</div>
+              </div>
+            
+              <div class="stat-card_divider"></div>
+            
+              <div class="stat-card_stat">
+                <div id="setsCompareValueL" class="stat-card_value compare_value">XX</div>
+              </div>
+            
+              <div class="stat-card_divider"></div>
+            
+              <div class="stat-card_stat">
+                <div id="setsCompareValueT" class="stat-card_value compare_value">XX</div>
+              </div>
+            </div>
+            <div id="sessionsCompareDesc" class="stat-card_session-description collapsible">Over XX sessions</div>
+            <div class="stat-card_divider-horizontal"></div>
+          </div>
+
+
+          <div class="stat-card_row stat-card_averages">
+            <div class="stat-card_stat">
+              <div class="stat-card_label">RIGHT</div>
+            </div>
+          
+            <div class="stat-card_divider-hidden"></div>
+          
+            <div class="stat-card_stat">
+              <div class="stat-card_label">LEFT</div>
+            </div>
+          
+            <div class="stat-card_divider-hidden"></div>
+          
+            <div class="stat-card_stat">
+              <div class="stat-card_label">TOTAL</div>
+            </div>
+          </div>
+
+        </div>
+        <!-- SHOOTING PERCENT CARD -->
+        <div id="statShootingPercentCard" class="stat-card">
+          <div class="stat-card_title">SHOOTING PCT</div>
+          <div id="shootingPercentCurrentLabel" class="stat-card_current-label collapsible">CURRENT</div>
+          <div class="stat-card_divider-horizontal_under_label"></div>
+
+          <div class="stat-card_row stat-card_averages">
+            <div class="stat-card_stat">
+              <div id="shootingPercentCurrentValueR" class="stat-card_value session_value">XX%</div>
+              <div id="shotsAndAttemptsCurrentValueR" class="stat-card_sub-value">XX/XX</div>
+            </div>
+        
+            <div class="stat-card_divider"></div>
+        
+            <div class="stat-card_stat">
+              <div id="shootingPercentCurrentValueL" class="stat-card_value session_value">XX%</div>
+              <div id="shotsAndAttemptsCurrentValueL" class="stat-card_sub-value">XX/XX</div>
+            </div>
+        
+            <div class="stat-card_divider"></div>
+        
+            <div class="stat-card_stat">
+              <div id="shootingPercentCurrentValueT" class="stat-card_value session_value">XX%</div>
+              <div id="shotsAndAttemptsCurrentValueT" class="stat-card_sub-value">XX/XX</div>
+            </div>
+          </div>
+          <div class="stat-card_divider-horizontal"></div>
+        
+          <div id="shootingPercentPriorAndCompareWrapper" class="collapsible">
+            <div class="stat-card_prior-label">PRIOR</div>
+            <div class="stat-card_divider-horizontal_under_label"></div>
+
+            <div class="stat-card_row stat-card_averages">
+              <div class="stat-card_stat">
+                <div id="shootingPercentPriorValueR" class="stat-card_value session_value">XX%</div>
+                <div id="shotsAndAttemptsPriorValueR" class="stat-card_sub-value">XX/XX</div>
+              </div>
+          
+              <div class="stat-card_divider"></div>
+          
+              <div class="stat-card_stat">
+                <div id="shootingPercentPriorValueL" class="stat-card_value session_value">XX%</div>
+                <div id="shotsAndAttemptsPriorValueL" class="stat-card_sub-value">XX/XX</div>
+              </div>
+          
+              <div class="stat-card_divider"></div>
+          
+              <div class="stat-card_stat">
+                <div id="shootingPercentPriorValueT" class="stat-card_value session_value">XX%</div>
+                <div id="shotsAndAttemptsPriorValueT" class="stat-card_sub-value">XX/XX</div>
+              </div>
+            </div>
+          
+            <div class="stat-card_divider-horizontal"></div>
+            <div class="stat-card_compare-label">COMPARE</div>
+            <div class="stat-card_divider-horizontal_under_label"></div>
+
+            <div class="stat-card_row stat-card_averages">
+              <div class="stat-card_stat">
+                <div id="shootingPercentCompareValueR" class="stat-card_value compare_value">XX%</div>
+              </div>
+            
+              <div class="stat-card_divider"></div>
+            
+              <div class="stat-card_stat">
+                <div id="shootingPercentCompareValueL" class="stat-card_value compare_value">XX%</div>
+              </div>
+            
+              <div class="stat-card_divider"></div>
+            
+              <div class="stat-card_stat">
+                <div id="shootingPercentCompareValueT" class="stat-card_value compare_value">XX%</div>
+              </div>
+            </div>
+            
+            <div class="stat-card_divider-horizontal"></div>
+          </div>
+
+        
+          <div class="stat-card_row stat-card_averages">
+            <div class="stat-card_stat">
+              <div class="stat-card_label">RIGHT</div>
+            </div>
+        
+            <div class="stat-card_divider-hidden"></div>
+        
+            <div class="stat-card_stat">
+              <div class="stat-card_label">LEFT</div>
+            </div>
+        
+            <div class="stat-card_divider-hidden"></div>
+        
+            <div class="stat-card_stat">
+              <div class="stat-card_label">TOTAL</div>
+            </div>
+          </div>
+        
+        </div>
+        <div id="graphWrapper" class="graph-card collapsible">
+          <div id="graphTitle" class="graph-title">SHOOTING PCT OVER THE LAST XXX DAYS</div>
+          <canvas id="myChart" width="100%"></canvas>
+        </div>
+        
+
+      </div>
+
+
+
       <div id="shotForm">
         <label>
           SESSION DATE:
           <input type="date" name="date" required />
         </label>
-        <!-- <h2>TEST</h2> -->
-        <!-- SESSION STATS CARD -->
+        <!-- SET STATS CARD -->
         <div class="stat-card">
           <div id="setHeading" class="stat-card_title">SET</div>
           <div id="setStatCardRow" class="stat-card_row">
@@ -586,7 +1048,7 @@
       </div>
 
       <div id="thankYou" class="hidden">
-        <h2>Nice work!</h2>
+        <h2 id="submissionTitle">Nice work!</h2>
         <p class="confirmation">Your session has been saved.</p>
         <div id="summarySessionStats" class="summary-stats">Session stats will go here</div>
         <!-- Collapsible Set Stats -->
@@ -611,14 +1073,9 @@
 
   </div>
   <!-- <script type="module" src="script.js"></script> -->
-  <script>
-    // Variables & Constants
-    let currentMode = "Giving";
-    const birthdayNameWrapper = document.getElementById("birthdayNameWrapper");
-    const hiddenInputCategory = document.getElementById("categoryInput");
-    const hiddenInputBirthdayName = document.getElementById("birthdayNameInput");
-    const vendorLabel = document.getElementById("vendorLabel");
-
+  <script src="chart.js"></script>
+  <script src="chartjs-adapter-date-fns.js"></script>
+  <script type="module">
     // ----- Transaction form logic -----
     // State: 5 sets, each with right/left; currentSet 0..4
     const state = {
@@ -628,12 +1085,17 @@
       note: ""
     };
 
+    let haveStats = false;
+    const LOCAL_STORAGE_KEY = 'shotTrackerData';
+
+    const modeToggleWrapper = document.getElementById("modeToggleWrapper");
     const form = document.getElementById("shotForm");
     const thankYou = document.getElementById("thankYou");
     const addAnother = document.getElementById("addAnother");
     const submitBtn = document.getElementById("submitBtn");
     const btnText = submitBtn.querySelector(".btn-text");
     const spinner = submitBtn.querySelector(".spinner");
+    const loadingOverlay = document.getElementById("loadingOverlay");
     const valueRight = document.getElementById('valueRight');
     const valueLeft = document.getElementById('valueLeft');
     const minusRight = document.getElementById('minusRight');
@@ -660,10 +1122,50 @@
     const dateInput = document.querySelector('input[name="date"]');
     const summarySessionStats = document.getElementById('summarySessionStats');
     const summarySetStats = document.getElementById('summarySetStats');
+    const submissionTitle = document.getElementById('submissionTitle');
     const collapsibleHeaderContainer = document.querySelector('.collapsible-header-container');
     const collapsibleContent = document.querySelector('.collapsible-content');
     const collapsibleArrow = document.getElementById('collapsibleArrow');
     const collapsibleInstructions = document.getElementById('collapsibleInstructions');
+    const stas = document.getElementById("stats");
+    const rangeTitle = document.getElementById("rangeTitle");
+    const rangeCurrentLabel = document.getElementById("rangeCurrentLabel");
+    const rangeCurrentDate = document.getElementById("rangeCurrentDate");
+    const rangePriorWrapper = document.getElementById("rangePriorWrapper");
+    const rangePriorDate = document.getElementById("rangePriorDate");
+    const setsCurrentLabel = document.getElementById("setsCurrentLabel");
+    const setsCurrentValueR = document.getElementById("setsCurrentValueR");
+    const setsCurrentValueL = document.getElementById("setsCurrentValueL");
+    const setsCurrentValueT = document.getElementById("setsCurrentValueT");
+    const sessionsCurrentDesc = document.getElementById("sessionsCurrentDesc");
+    const setsPriorAndCompareWrapper = document.getElementById("setsPriorAndCompareWrapper");
+    const setsPriorValueR = document.getElementById("setsPriorValueR");
+    const setsPriorValueL = document.getElementById("setsPriorValueL");
+    const setsPriorValueT = document.getElementById("setsPriorValueT");
+    const sessionsPriorDesc = document.getElementById("sessionsPriorDesc");
+    const setsCompareValueR = document.getElementById("setsCompareValueR");
+    const setsCompareValueL = document.getElementById("setsCompareValueL");
+    const setsCompareValueT = document.getElementById("setsCompareValueT");
+    const sessionsCompareDesc = document.getElementById("sessionsCompareDesc");
+    const statShootingPercentCard = document.getElementById("statShootingPercentCard");
+    const shootingPercentCurrentLabel = document.getElementById("shootingPercentCurrentLabel");
+    const shootingPercentCurrentValueR = document.getElementById("shootingPercentCurrentValueR");
+    const shootingPercentCurrentValueL = document.getElementById("shootingPercentCurrentValueL");
+    const shootingPercentCurrentValueT = document.getElementById("shootingPercentCurrentValueT");
+    const shotsAndAttemptsCurrentValueR = document.getElementById("shotsAndAttemptsCurrentValueR");
+    const shotsAndAttemptsCurrentValueL = document.getElementById("shotsAndAttemptsCurrentValueL");
+    const shotsAndAttemptsCurrentValueT = document.getElementById("shotsAndAttemptsCurrentValueT");
+    const shootingPercentPriorAndCompareWrapper = document.getElementById("shootingPercentPriorAndCompareWrapper");
+    const shootingPercentPriorValueR = document.getElementById("shootingPercentPriorValueR");
+    const shootingPercentPriorValueL = document.getElementById("shootingPercentPriorValueL");
+    const shootingPercentPriorValueT = document.getElementById("shootingPercentPriorValueT");
+    const shotsAndAttemptsPriorValueR = document.getElementById("shotsAndAttemptsPriorValueR");
+    const shotsAndAttemptsPriorValueL = document.getElementById("shotsAndAttemptsPriorValueL");
+    const shotsAndAttemptsPriorValueT = document.getElementById("shotsAndAttemptsPriorValueT");
+    const shootingPercentCompareValueR = document.getElementById("shootingPercentCompareValueR");
+    const shootingPercentCompareValueL = document.getElementById("shootingPercentCompareValueL");
+    const shootingPercentCompareValueT = document.getElementById("shootingPercentCompareValueT");
+    const graphWrapper = document.getElementById("graphWrapper");
 
     const SECRET_TOKEN = "oo04d@E5tXR3ie*8G&9$3SzHd79M0H";
     const scriptURL = "https://script.google.com/macros/s/AKfycbyvKYyNhZb3e7KftrOciXIKQFzogaFCyQQdKC1mUwoPUDqJ4t6mfBYZIoDhc7I4140e6g/exec"
@@ -708,6 +1210,8 @@
       let sessionTotalAttemptsLeft = 0;
       let sessionTotalMakesRight = 0;
       let sessionTotalMakesLeft = 0;
+      let sessionSetsCompletedRight = 0;
+      let sessionSetsCompletedLeft = 0;
 
       state.sets.forEach(shot => {
         // Add attempts
@@ -715,20 +1219,71 @@
         sessionTotalAttemptsLeft += shot.left;
 
         // Add makes (3 points if value > 0)
-        if (shot.right > 0) sessionTotalMakesRight += 3;
-        if (shot.left > 0) sessionTotalMakesLeft += 3;
+        if (shot.right > 0) {
+           sessionTotalMakesRight += 3;
+           sessionSetsCompletedRight += 1;
+        }
+        if (shot.left > 0) {
+          sessionTotalMakesLeft += 3;
+          sessionSetsCompletedLeft += 1;
+        }
       });
 
-      sessionShootingPercentRight.textContent = sessionTotalAttemptsRight > 0 ? `${parseFloat((sessionTotalMakesRight / sessionTotalAttemptsRight * 100).toFixed(1))}%` : "—";
-      sessionShotsAndAttemptsRight.textContent = sessionTotalAttemptsRight > 0 ? `${sessionTotalMakesRight}/${sessionTotalAttemptsRight}` : "—";
+      calculateInsertAndColorCodeShootingPercentAndShotsSlashAttempts(sessionTotalAttemptsRight, sessionTotalMakesRight, sessionShootingPercentRight, sessionShotsAndAttemptsRight, "R");
+      calculateInsertAndColorCodeShootingPercentAndShotsSlashAttempts(sessionTotalAttemptsLeft, sessionTotalMakesLeft, sessionShootingPercentLeft, sessionShotsAndAttemptsLeft, "L");
+      calculateInsertAndColorCodeShootingPercentAndShotsSlashAttempts((sessionTotalAttemptsRight + sessionTotalAttemptsLeft), (sessionTotalMakesRight + sessionTotalMakesLeft), sessionShootingPercentTotal, sessionShotsAndAttemptsTotal, "T");
+    }
 
+    function calculateInsertAndColorCodeShootingPercentAndShotsSlashAttempts(attempts, makes, elementShootingPercent, elementShotsAndAttempts, whichRLT) {
+      if (attempts > 0) {
+        let shootingPercentValue = makes / attempts;
+        elementShootingPercent.textContent = `${parseFloat((shootingPercentValue * 100).toFixed(1))}%`;
+        elementShotsAndAttempts.textContent = `${makes}/${attempts}`;
+      } else {
+        elementShootingPercent.textContent = "—"
+        elementShotsAndAttempts.textContent = "—"
+      }
 
-      sessionShootingPercentLeft.textContent = sessionTotalAttemptsLeft > 0 ? `${parseFloat((sessionTotalMakesLeft / sessionTotalAttemptsLeft * 100).toFixed(1))}%` : "—";
-      sessionShotsAndAttemptsLeft.textContent = sessionTotalAttemptsLeft > 0 ? `${sessionTotalMakesLeft}/${sessionTotalAttemptsLeft}` : "—";
+      colorCodeShooting({ attempts, makes, element: elementShootingPercent, whichRLT });
+      colorCodeShooting({ attempts, makes, element: elementShotsAndAttempts, whichRLT });
+    }
 
-      sessionShootingPercentTotal.textContent = (sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${parseFloat(((sessionTotalMakesRight + sessionTotalMakesLeft) / (sessionTotalAttemptsRight + sessionTotalAttemptsLeft) * 100).toFixed(1))}%` : "—";
-      sessionShotsAndAttemptsTotal.textContent = (sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) > 0 ? `${sessionTotalMakesRight + sessionTotalMakesLeft}/${sessionTotalAttemptsRight + sessionTotalAttemptsLeft}` : "—";
+    function colorCodeShooting({ attempts, makes, element=null, whichRLT }) {
+      const highlightClasses = [
+        "highlight-red",
+        "highlight-yellow",
+        "highlight-green",
+        "highlight-blue",
+        "highlight-gray"
+      ];
 
+      if (element) element.classList.remove(...highlightClasses);
+
+      if (!attempts || attempts <= 0) {
+        return null;
+      }
+
+      const shootingPercentValue = makes / attempts;
+
+      let classToApply = null;
+
+      if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_10_percentile${whichRLT}`]) {
+        classToApply = highlightClasses[0];
+      } else if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_25_percentile${whichRLT}`]) {
+        classToApply = highlightClasses[1];
+      } else if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_75_percentile${whichRLT}`]) {
+        classToApply = null; // average (no highlight)
+      } else if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_90_percentile${whichRLT}`]) {
+        classToApply = highlightClasses[2];
+      } else {
+        classToApply = highlightClasses[3];
+      }
+
+      if (element && classToApply) {
+        element.classList.add(classToApply);
+      }
+      
+      return classToApply;
     }
 
     // Helpers to update a single value
@@ -863,8 +1418,9 @@
           body: JSON.stringify(payload)
         });
 
+        modeToggleWrapper.classList.add("hidden");  
         form.classList.add("hidden");
-        calculateSummaryStats();
+        renderSummaryStats();
         thankYou.classList.remove("hidden");
 
         // Reset state after successful submit
@@ -880,6 +1436,7 @@
         console.error(err);
       } finally {
         setLoading(false);
+        getStatsFromGoogleSheet();        
       }
     });
 
@@ -889,7 +1446,11 @@
       spinner.classList.toggle("hidden", !isLoading);
     }
 
-    function calculateSummaryStats() {
+    function statsLoading(isLoading) {
+      loadingOverlay.classList.toggle("hidden", !isLoading);
+    }
+
+    function renderSummaryStats() {
       // Calculate and display Session Shooting Percentage
       let sessionTotalAttemptsRight = 0;
       let sessionTotalAttemptsLeft = 0;
@@ -951,6 +1512,12 @@
         summarySetStats.innerHTML += setStatCardHTML;
       });
 
+      const shootingPercentClassR = colorCodeShooting({ attempts: sessionTotalAttemptsRight, makes: sessionTotalMakesRight, whichRLT: "R" });
+      const shootingPercentClassL = colorCodeShooting({ attempts: sessionTotalAttemptsLeft, makes: sessionTotalMakesLeft, whichRLT: "L" });
+      const shootingPercentClassT = colorCodeShooting({ attempts: (sessionTotalAttemptsRight + sessionTotalAttemptsLeft), makes: (sessionTotalMakesRight + sessionTotalMakesLeft), whichRLT: "T" });
+
+      submissionTitle.textContent = submissionMessage({ attempts: (sessionTotalAttemptsRight + sessionTotalAttemptsLeft), makes: (sessionTotalMakesRight + sessionTotalMakesLeft), whichRLT: "T" });
+
       const sessionStatCardHTML = `
         <!-- SUMMARY SET STATS CARD -->
         <div class="stat-card">
@@ -958,30 +1525,105 @@
 
           <div class="stat-card_row stat-card_averages">
             <div class="stat-card_stat">
-              <div class="stat-card_value session_value">${sessionTotalAttemptsRight > 0 ? `${parseFloat((sessionTotalMakesRight / sessionTotalAttemptsRight * 100).toFixed(1))}%` : "—"}</div>
-              <div class="stat-card_sub-value">${sessionTotalAttemptsRight > 0 ? `${sessionTotalMakesRight}/${sessionTotalAttemptsRight}` : "—"}</div>
+              <div class="stat-card_value session_value${shootingPercentClassR === null ? "" : ` ${shootingPercentClassR}`}">${sessionTotalAttemptsRight > 0 ? `${parseFloat((sessionTotalMakesRight / sessionTotalAttemptsRight * 100).toFixed(1))}%` : "—"}</div>
+              <div class="stat-card_sub-value${shootingPercentClassR === null ? "" : ` ${shootingPercentClassR}`}">${sessionTotalAttemptsRight > 0 ? `${sessionTotalMakesRight}/${sessionTotalAttemptsRight}` : "—"}</div>
               <div class="stat-card_label">RIGHT</div>
             </div>
 
             <div class="stat-card_divider"></div>
 
             <div class="stat-card_stat">
-              <div class="stat-card_value session_value">${sessionTotalAttemptsLeft > 0 ? `${parseFloat((sessionTotalMakesLeft / sessionTotalAttemptsLeft * 100).toFixed(2))}%` : "—"}</div>
-              <div class="stat-card_sub-value">${sessionTotalAttemptsLeft > 0 ? `${sessionTotalMakesLeft}/${sessionTotalAttemptsLeft}` : "—"}</div>
+              <div class="stat-card_value session_value${shootingPercentClassL === null ? "" : ` ${shootingPercentClassL}`}">${sessionTotalAttemptsLeft > 0 ? `${parseFloat((sessionTotalMakesLeft / sessionTotalAttemptsLeft * 100).toFixed(2))}%` : "—"}</div>
+              <div class="stat-card_sub-value${shootingPercentClassL === null ? "" : ` ${shootingPercentClassL}`}">${sessionTotalAttemptsLeft > 0 ? `${sessionTotalMakesLeft}/${sessionTotalAttemptsLeft}` : "—"}</div>
               <div class="stat-card_label">LEFT</div>
             </div>
 
             <div class="stat-card_divider"></div>
 
             <div class="stat-card_stat">
-              <div id="sessionShootingPercentTotal" class="stat-card_value session_value">${(sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${parseFloat(((sessionTotalMakesRight + sessionTotalMakesLeft) / (sessionTotalAttemptsRight + sessionTotalAttemptsLeft) * 100).toFixed(1))}%` : "—"}</div>
-              <div id="sessionShotsAndAttemptsTotal" class="stat-card_sub-value">${(sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${sessionTotalMakesRight + sessionTotalMakesLeft}/${sessionTotalAttemptsRight + sessionTotalAttemptsLeft}` : "—"}</div>
+              <div id="sessionShootingPercentTotal" class="stat-card_value session_value${shootingPercentClassT === null ? "" : ` ${shootingPercentClassT}`}">${(sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${parseFloat(((sessionTotalMakesRight + sessionTotalMakesLeft) / (sessionTotalAttemptsRight + sessionTotalAttemptsLeft) * 100).toFixed(1))}%` : "—"}</div>
+              <div id="sessionShotsAndAttemptsTotal" class="stat-card_sub-value${shootingPercentClassT === null ? "" : ` ${shootingPercentClassT}`}">${(sessionTotalAttemptsRight > 0 || sessionTotalAttemptsLeft > 0) ? `${sessionTotalMakesRight + sessionTotalMakesLeft}/${sessionTotalAttemptsRight + sessionTotalAttemptsLeft}` : "—"}</div>
               <div class="stat-card_label">TOTAL</div>
             </div>
           </div>
         </div>
       `;
       summarySessionStats.innerHTML += sessionStatCardHTML;
+    }
+
+    function submissionMessage({ attempts, makes, whichRLT }) {
+      const noAttempts = [
+        "No attempts today!",
+        "Let's shoot some tomorrow!",
+        "Let's get some reps in next time!"
+      ];
+
+      const veryPoor = [
+        "Focus and shoot better!",
+        "Step up your game!",
+        "Eyes on the basket!",
+        "Sharpen your form!",
+        "Not your best, don't give up!",
+        "Shooter keep shooting!"
+      ];
+
+      const poor = [
+        "Push harder!",
+        "Keep working on the fundamentals!",
+        "Not enough consistency yet!",
+        "Focus and take control!",
+        "Work harder!"
+      ];
+
+      const averageLow = [
+        "Keep improving every rep!",
+        "Is average good enough?",
+        "Decent, but you've got more!"
+      ]
+
+      const averageHigh = [
+        "Solid, but you can do better!",
+        "Good, but raise the bar!",
+        "Consistent, but keep pushing!",
+        "Nice work!",
+      ];
+
+      const great = [
+        "Strong shooting!",
+        "Excellent work!",
+        "You’re hitting your stride!",
+        "Impressive!",
+        "Great work!"
+      ];
+
+      const elite = [
+        "Precision shooting!",
+        "Top-tier shooting!",
+        "You’re on fire!",
+        "Elite performance!",
+        "Nearly perfect execution!",
+        "One of your best!"
+      ];
+
+      if (!attempts || attempts <= 0) {
+        return noAttempts[Math.floor(Math.random() * noAttempts.length)]
+      }
+
+      const shootingPercentValue = makes / attempts;
+
+      if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_10_percentile${whichRLT}`]) return veryPoor[Math.floor(Math.random() * veryPoor.length)];
+      
+      if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_25_percentile${whichRLT}`]) return poor[Math.floor(Math.random() * poor.length)];
+      
+      if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_50_percentile${whichRLT}`]) return averageLow[Math.floor(Math.random() * averageLow.length)];
+
+      if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_75_percentile${whichRLT}`]) return averageHigh[Math.floor(Math.random() * averageHigh.length)];
+
+      if (shootingPercentValue < statsFromGoogleSheet[`shootingScoreCutoff_90_percentile${whichRLT}`]) return great[Math.floor(Math.random() * great.length)];
+      
+      if (shootingPercentValue >= statsFromGoogleSheet[`shootingScoreCutoff_90_percentile${whichRLT}`]) return elite[Math.floor(Math.random() * elite.length)];
+
+      return "Nice work!";
     }
 
     collapsibleHeaderContainer.addEventListener('click', () => {
@@ -1001,6 +1643,7 @@
     addAnother.addEventListener("click", () => {
       thankYou.classList.add("hidden");
       form.classList.remove("hidden");
+      modeToggleWrapper.classList.remove("hidden");  
       state.sets = Array.from({ length: 5 }, () => ({ right: 0, left: 0 }));
       state.currentSet = 0;
       state.note = "";
@@ -1011,11 +1654,13 @@
     });
 
     function previewThankYouCard() {
-        // Hide the form
-        form.classList.add("hidden");
-        // Show thankYou
-        thankYou.classList.remove("hidden");
-        calculateSummaryStats()
+      // Hide mode slider
+      modeToggleWrapper.classList.add("hidden");  
+      // Hide the form
+      form.classList.add("hidden");
+      // Show thankYou
+      thankYou.classList.remove("hidden");
+      renderSummaryStats()
 
     }
     // previewThankYouCard();
@@ -1036,22 +1681,458 @@
     );
 
     // --- GET STATS FROM GOOGLE SHEET ---
+    let statsFromGoogleSheet = {};
+    let allTimeDataFromGoogleSheet = [];
+    let last365DataFromGoogleSheet = [];
+    let currentMode = "Input";
+    let currentStatRange = "1";
+
     async function getStatsFromGoogleSheet() {
+      if (!haveStats && currentMode === "Stats") statsLoading(true);
+      
       try {
         const response = await fetch(`${scriptURL}?token=${encodeURIComponent(SECRET_TOKEN)}`);
         const data = await response.json();
 
-        if (data.success && data.stats) {
-          console.log("Stats from sheet:", data.stats);
+        if (data.success) {
+          if (data.stats) {
+            console.log("Stats from sheet:", data.stats);
+            statsFromGoogleSheet = data.stats;
+          }
 
-        }
+          if (data.allTimeData) {
+            console.log("All-Time Data from sheet:", data.allTimeData);
+            allTimeDataFromGoogleSheet = data.allTimeData;
+          }
+
+          if (data.last365Data) {
+            console.log("Last 365 Data from sheet:", data.last365Data);
+            last365DataFromGoogleSheet = data.last365Data;
+          }
+
+          if (data.stats && data.allTimeData && data.last365Data) {
+            saveToLocalStorage({
+              stats: statsFromGoogleSheet,
+              allTimeData: allTimeDataFromGoogleSheet,
+              last365Data: last365DataFromGoogleSheet
+            });
+          }
+
+        } 
+
       } catch (err) {
         console.error("Failed to load stats from Google Sheets:", err);
+      } finally {
+        if(!haveStats) {
+          haveStats = true;
+          if (currentMode === "Stats") statsLoading(false);
+        }
+        fillOutStats();
+        console.log("loaded stats from google sheets");
       }
     }
 
-    getStatsFromGoogleSheet();
-  </script>
-</body>
+    function loadFromLocalStorage() {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error("Failed to parse localStoreage data", e);
+        return null;
+      }      
+    }
+
+    function saveToLocalStorage({ stats, allTimeData, last365Data }) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ stats, allTimeData, last365Data }));
+    }
+
+    function initializeStats() {
+      const cachedData = loadFromLocalStorage();
+      if (cachedData && cachedData.stats && cachedData.allTimeData && cachedData.last365Data) {
+        statsFromGoogleSheet = cachedData.stats;
+        allTimeDataFromGoogleSheet = cachedData.allTimeData;
+        last365DataFromGoogleSheet = cachedData.last365Data;
+        haveStats = true;
+        fillOutStats();
+        console.log("loaded stats from cache");
+      } else {
+        console.log("stats were not able to be loaded from cache");
+      }
+
+      getStatsFromGoogleSheet();
+    }
+
+    initializeStats();
+
+    import { Slider } from './slider.js';
+    // ----- TOGGLE SECTION -----
+    // Variables & Constants
+    const statDateRangeWrapper = document.getElementById("statDateRangeWrapper");
+
+    // Initialize sliders
+    const modeSlider = new Slider({
+      toggleEl: document.querySelector('.mode-toggle'),
+      onActivate: (index, value) => {
+        currentMode = value;
+        showCurrentMode();
+      }
+    });
+
+    const statDateRangeSlider = new Slider({
+      toggleEl: document.querySelector('.statDateRange-toggle'),
+      onActivate: (index, value) => {
+        currentStatRange = value;
+        fillOutStats();
+      }
+    });
+
+    // Reconfigure category slider dynamically
+    function showCurrentMode() {
+      // wait one frame so layout is real
+      requestAnimationFrame(() => {
+        statDateRangeSlider.updatePillWidth();
+      });
+
+      if (currentMode === "Input") {
+        form.classList.remove("hidden");
+        stats.classList.add("hidden");
+      }
+
+      if (currentMode === "Stats") {
+        form.classList.add("hidden");
+        stats.classList.remove("hidden");
+        if (!haveStats) {
+          statsLoading(true);
+        }
+      }
+
+    }
+
+    function resetToggles() {
+      modeSlider.activate(0, { animate: false }); // 0 = first button (Giving)
+    }
+
+    function fillOutStats() {
+      let rangeStringForKey = "";
+
+      switch (currentStatRange) {
+        case "1":
+          rangeTitle.textContent = "LAST SESSION";
+          rangeStringForKey = "mostRecentSession";
+          insertStatDate({ elementName: rangeCurrentDate, dateKey: `current_${rangeStringForKey}_startDate`, dateType: "singleDate" });
+          insertStatDate({ elementName: rangePriorDate, dateKey: `prior_${rangeStringForKey}_startDate`, dateType: "singleDate" });
+          sessionsCurrentDesc.classList.remove("show");
+          sessionsPriorDesc.classList.remove("show");
+          sessionsCompareDesc.classList.remove("show");
+          statShootingPercentCard.style.marginBottom = "0";
+          graphWrapper.classList.remove("show");
+          break;
+        
+        case "All":
+          rangeTitle.textContent = "ALL-TIME";
+          rangeStringForKey = "allTime";
+          statShootingPercentCard.style.marginBottom = "12px";
+          sessionsCurrentDesc.classList.add("show");
+          sessionsPriorDesc.classList.remove("show");
+          sessionsCompareDesc.classList.remove("show");
+          showPriorAndCompareForNonAllTime(false);
+          break;
+
+        default:
+          rangeTitle.textContent = `LAST ${currentStatRange} DAYS`;
+          rangeStringForKey = `${currentStatRange}days`;
+          insertStatDate({ elementName: rangePriorDate, dateKey: `prior_${rangeStringForKey}_startDate`, dateKey2: `prior_${rangeStringForKey}_endDate`, dateType: "dateRange" });
+          insertStatsValue({ baseElement: "sessionsPriorDesc", baseKey: `prior_${rangeStringForKey}_sessions`, statType: "sessionDesc", rlt: false });
+          applyCompare({ baseName: "sessionsCompareDesc", baseKey: `compare_${rangeStringForKey}_sessions`, numberFormat: "int", compareType: "sessionDes", rlt: false });
+          sessionsCurrentDesc.classList.add("show");
+          sessionsPriorDesc.classList.add("show");
+          sessionsCompareDesc.classList.add("show");
+      }
+
+      insertStatsValue({ baseElement: "setsCurrentValue", baseKey: `current_${rangeStringForKey}_setsCompleted` });
+      insertStatsValue({ baseElement: "shootingPercentCurrentValue", baseKey: `current_${rangeStringForKey}_shootingPercent`, numberFormat: "oneDecimalPercent" });
+      insertStatsValue({ baseElement: "shotsAndAttemptsCurrentValue", baseKey: `current_${rangeStringForKey}_setsCompleted`, numberFormat: "int", baseKey2: `current_${rangeStringForKey}_attempts`, statType: "makesSlashMisses" });
+      
+      
+
+      if (currentStatRange !== "1") {
+        insertStatDate({ elementName: rangeCurrentDate, dateKey: `current_${rangeStringForKey}_startDate`, dateKey2: `current_${rangeStringForKey}_endDate`, dateType: "dateRange" });
+        insertStatsValue({ baseElement: "sessionsCurrentDesc", baseKey: `current_${rangeStringForKey}_sessions`, statType: "sessionDesc", rlt: false });
+
+        // Setup Graph
+        graphTitle.textContent = `SHOOTING PCT ${currentStatRange === "All" ? `ALL-TIME` : `OVER THE LAST ${currentStatRange} DAYS`}`;
+        const rangeStartDate = new Date(statsFromGoogleSheet[`current_${rangeStringForKey}_startDate`]);
+        const rangeEndDate = new Date(statsFromGoogleSheet[`current_${rangeStringForKey}_endDate`]);
+        const totalDays = (rangeEndDate - rangeStartDate) / (1000 * 60 * 60 * 24) + 1;
+        const approxTicks = 10;
+        const step = Math.ceil(totalDays / approxTicks);
+        const { dateLabels, shootingPcts } = filterDataForChart(rangeStartDate, rangeEndDate, (currentStatRange === "All" ? allTimeDataFromGoogleSheet : last365DataFromGoogleSheet));
+        
+        shootingChart.options.scales.x.time.stepSize = step;
+        shootingChart.options.scales.x.ticks.maxTicksLimit = approxTicks;
+        shootingChart.data.labels = dateLabels;
+        shootingChart.data.datasets[0].data = shootingPcts;
+        shootingChart.data.datasets[0].pointRadius = ((currentStatRange === "7" || currentStatRange === "30") ? 3 : 1);
+        shootingChart.update();
+
+        if (statsFromGoogleSheet[`current_${rangeStringForKey}_shootingPercentT`] !== "") {
+          statShootingPercentCard.style.marginBottom = "12px";
+          graphWrapper.classList.add("show");
+        } else {
+          statShootingPercentCard.style.marginBottom = "0";
+          graphWrapper.classList.remove("show");
+        }
+      }
+
+      if (currentStatRange !== "All") {
+        insertStatsValue({ baseElement: "setsPriorValue", baseKey: `prior_${rangeStringForKey}_setsCompleted` });
+        applyCompare({ baseName: "setsCompareValue", baseKey: `compare_${rangeStringForKey}_setsCompleted`, numberFormat: "int" });
+        insertStatsValue({ baseElement: "shootingPercentPriorValue", baseKey: `prior_${rangeStringForKey}_shootingPercent`, numberFormat: "oneDecimalPercent" });
+        insertStatsValue({ baseElement: "shotsAndAttemptsPriorValue", baseKey: `prior_${rangeStringForKey}_setsCompleted`, numberFormat: "int", baseKey2: `prior_${rangeStringForKey}_attempts`, statType: "makesSlashMisses" });
+        applyCompare({ baseName: "shootingPercentCompareValue", baseKey: `compare_${rangeStringForKey}_shootingPercent`, numberFormat: "oneDecimalPercent" });
+        showPriorAndCompareForNonAllTime(true);
+      }
+    }
+
+    function insertStatDate({ elementName, dateKey, dateType = "dateRange", dateKey2 = "" }) {
+      if (dateType === "singleDate") {
+        elementName.textContent = new Date(statsFromGoogleSheet[dateKey]).toLocaleDateString("en-US", { timeZone: "UTC", month: "2-digit", day: "2-digit", year: "2-digit" });
+      } else {
+        elementName.textContent = `${new Date(statsFromGoogleSheet[dateKey]).toLocaleDateString("en-US", { timeZone: "UTC", month: "2-digit", day: "2-digit", year: "2-digit" })} — ${new Date(statsFromGoogleSheet[dateKey2]).toLocaleDateString("en-US", { timeZone: "UTC", month: "2-digit", day: "2-digit", year: "2-digit" })}`;
+      }
+    }
+
+    function insertStatsValue({baseElement, baseKey, numberFormat = "int", statType = "singleNumber", baseKey2 = "", rlt = true }) {
+      if (rlt) {
+        const allThree = ["R", "L", "T"];
+        allThree.forEach(pos => {
+          const el = window[baseElement + pos];
+
+          if (statType === "singleNumber") {
+            if (numberFormat === "oneDecimalPercent") {
+              el.textContent = `${parseFloat((statsFromGoogleSheet[baseKey + pos] * 100).toFixed(1))}%`;
+            } else {
+              el.textContent = statsFromGoogleSheet[baseKey + pos].toLocaleString("en-US", { maximumFractionDigits: 0 });
+            }
+          } else if (statType === "makesSlashMisses") {
+            el.textContent = `${(statsFromGoogleSheet[baseKey + pos] * 3).toLocaleString("en-US", { maximumFractionDigits: 0 }) }/${statsFromGoogleSheet[baseKey2 + pos].toLocaleString("en-US", { maximumFractionDigits: 0 }) }`;
+          }
+        });
+      } else {
+        const el = window[baseElement];
+
+        if (statType === "sessionDesc") {
+          el.textContent = `across ${statsFromGoogleSheet[baseKey]} session${statsFromGoogleSheet[baseKey] === 1 ? "" : "s"}`;
+        } else {
+          el.textContent = statsFromGoogleSheet[baseKey];
+        }
+      }
+    }
+
+    function compareFormat({ compareKey, numberFormat, compareType = "" }) {
+      let resultValue = statsFromGoogleSheet[compareKey];
+      if (numberFormat === "oneDecimalPercent") {
+        resultValue = parseFloat((statsFromGoogleSheet[compareKey] * 100).toFixed(1));
+      } 
+
+      if (compareType === "") {
+        if (resultValue > 0) {
+          return {
+            text: `▲ ${numberFormat === "int" ? resultValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) : resultValue}${numberFormat === "oneDecimalPercent" ? "%" : ""}`,
+            className: "green"
+          };
+        } else if (resultValue === 0) {
+          return {
+            text: "—",
+            className: "gray"
+          };
+        } else {
+          return {
+            text: `▼ ${Math.abs(numberFormat === "int" ? resultValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) : resultValue)}${numberFormat === "oneDecimalPercent" ? "%" : ""}`,
+            className: "red"
+          };
+        }
+      } else if (compareType === "sessionDesc") {
+        if (resultValue > 0) {
+          return {
+            text: `across ▲ ${numberFormat === "int" ? resultValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) : resultValue} more session${resultValue === 1 ? "" : "s"}`,
+            className: "green"
+          };
+        } else if (resultValue === 0) {
+          return {
+            text: "across the same number of sessions",
+            className: "gray"
+          };
+        } else {
+          return {
+            text: `across ▼ ${Math.abs(numberFormat === "int" ? resultValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) : resultValue)} less session${resultValue === 1 ? "" : "s"}`,
+            className: "red"
+          };
+        }
+      }
+    }
+
+
+    function applyCompare({baseName, baseKey, numberFormat = "int", compareType = "", rlt = true }) {
+      if (rlt) {
+        const allThree = ["R", "L", "T"];
+        allThree.forEach(pos => {
+          const { text, className } = compareFormat({ compareKey: baseKey + pos, numberFormat: numberFormat });
+          const el = window[baseName + pos];
+          el.textContent = text;
+          el.classList.remove("highlight-green", "highlight-gray", "highlight-red")
+          el.classList.add(`highlight-${className}`);
+        });
+      } else {
+        const { text, className } = compareFormat({ compareKey: baseKey, numberFormat: numberFormat, compareType: "sessionDesc" });
+        const el = window[baseName];
+        el.textContent = text;
+        el.classList.remove("highlight-green", "highlight-gray", "highlight-red")
+        el.classList.add(`highlight-${className}`);
+      }
+    }
+
+    function showPriorAndCompareForNonAllTime(shouldShow) {
+      const elementsToToggle = [rangeCurrentLabel, rangePriorWrapper, setsCurrentLabel, setsPriorAndCompareWrapper, shootingPercentCurrentLabel, shootingPercentPriorAndCompareWrapper];
+      elementsToToggle.forEach(el => {
+        el.classList.toggle("show", shouldShow);
+      })
+    }
+
+
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  // Sample data
+  const data = {
+    labels: ['2026-01-01', '2026-01-02'],
+    datasets: [{
+      label: 'Shooting %',
+      data: [0.5, 0.6],
+      pointBackgroundColor: '#ff681d',
+      pointBorderColor: '#ff681d',
+      pointRadius: 3,
+      borderColor: '#ff681d',  // line color
+      backgroundColor: 'rgba(0,0,0,0)',
+      tension: 0,
+      spanGaps: true
+    }]
+  };
+
+  const config = {
+    type: 'line',
+    data: data,
+    options: {
+      plugins: {
+        legend: { display: false },
+        title: { display: false },
+        tooltip: {
+          displayColors: false,
+          callbacks: {
+            title: context => {
+              // context is an array of points being hovered
+              const date = new Date(context[0].parsed.x);
+              // Use only month/day/year
+              return date.toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              });
+            },
+            label: context => {
+              const value = context.raw;
+              return `${(value * 100).toFixed(1)}%`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'time',        // date axis
+          time: {
+            unit: 'day',
+            displayFormats: { day: 'MM/dd/yy'}
+            // stepSize: 2
+        },
+          grid: { 
+            color: '#acacac',
+            drawBorder: true,
+            drawOnChartArea: true,
+            drawTicks: false
+          },
+          border: {
+            display: true,
+            color: '#ffffff',  // matches your y-axis line
+            width: 1
+          },
+          ticks: {
+            // maxTicksLimit: 30,
+            color: '#ffffff',
+            maxRotation: 60,
+            minRotation: 60,
+            font: {
+              family: getComputedStyle(document.body).fontFamily,
+              size: 10
+            },
+            padding: 6
+          }
+        },
+        y: {
+          min: 0,
+          max: 1,
+          ticks: {
+            stepSize: 0.25,
+            callback: value => `${(value * 100).toFixed(0)}%`,
+            color: '#ffffff',
+            font: {
+              family: getComputedStyle(document.body).fontFamily,
+              size: 10
+            },
+            padding: 8
+          },
+          grid: {
+            color: '#acacac',
+            drawBorder: true,
+            drawOnChartArea: true,
+            drawTicks: false,
+          },
+          border: {
+            display: true,
+            color: '#ffffff',  // matches your y-axis line
+            width: 1
+          }
+        }
+      }
+    }
+  };
+
+  const shootingChart = new Chart(ctx, config);
+
+  function filterDataForChart(startDate, endDate, whichData) {
+    const start = startDate;
+    const end = endDate;
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(23, 59, 59, 999);
+
+    const filtered = whichData.filter(d => {
+      const date = new Date(d.date);
+      return date >= start && date <= end;
+    });
+
+    return {
+      dateLabels: filtered.map(d => d.date),
+      shootingPcts: filtered.map(d => d.shootingPct)
+    };
+  }
+
+    // Example usage
+    // const { labels, values } = filterData(new Date('2026-01-01'), new Date('2026-01-07'));
+    // myChart.data.labels = labels;
+    // myChart.data.datasets[0].data = values;
+    // myChart.update();
+
+
+</script></body>
 
 </html>

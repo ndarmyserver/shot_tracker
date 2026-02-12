@@ -1,8 +1,30 @@
-orange          #FF681D
-dark orange     #CC5315
-white           #FAFAFA
-light gray      #EAEAEA
-app light gray  #ACACAC
-app darker gray #646464
-nearly black    #1D1D1E
-black           #151515
+orange             #ff681d
+dark orange        #cc5315
+white              #fafafa
+light gray         #eaeaea
+app light gray     #acacac
+app darker gray    #646464
+dark gray from web #444444
+nearly black       #1d1d1e
+black              #151515
+
+      color: #f5c400
+      color: #2ecc71
+      color: #f6413c
+      #16302B
+      #243E36
+      #2A3C24
+      #56876D
+      #3AAED8
+      #2BD9FE
+      #586BA4
+      #324376
+      #2B3A67
+      #2F52E0
+      #51BBFE
+      #06AED5
+      #086788
+
+#ff9f1c or #f39c12
+#8e44ad or #9b59b6
+#1f4fff or #2962ff
